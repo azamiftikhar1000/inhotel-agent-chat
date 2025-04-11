@@ -12,8 +12,11 @@ export async function OPTIONS(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY as string);
-
+  const authKitToken = new AuthKitToken("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9kyZO3ee9hWfjGWpt5dY0AzxvM51q6_45_Q6bJTWCTuax7yq4X96nhvB0uTwhhLlsxyJm02JqasmdeDVeHt08GxGPoiBc7I9u00-1EKOejw62kNO0M1EaEFqwaGXw1Y8IfFH",
+    {
+      baseUrl: "http://localhost:3005",
+    }
+  );
   const token = await authKitToken.create({
     identity: "user_123", // a meaningful identifier (i.e., userId, teamId or organizationId)
     identityType: "user" // can be either user, team or organization
