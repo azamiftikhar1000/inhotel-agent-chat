@@ -8,7 +8,7 @@ export function Header() {
       <div className="flex items-center justify-center max-w-[800px] mx-auto w-full">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <a href="http://localhost:3000" target="_blank">
+            <a href="https://inhotel-auth-4fbefd0bd04c.herokuapp.com" target="_blank">
             {/* <ahref="https://picaos.com" target="_blank"> */}
               <Image
                 src="/logo-white.svg"

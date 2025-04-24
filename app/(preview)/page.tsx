@@ -8,17 +8,6 @@ import { ChatMessages } from "./components/ChatMessages";
 import { ChatInput } from "./components/ChatInput";
 
 export default function Home() {
-  const { open } = useAuthKit({
-    token: {
-      url: "http://localhost:3000/api/authkit",
-      headers: {},
-    },
-    // appTheme: 'dark',
-    selectedConnection: "GitHub",
-    onSuccess: (connection) => {},
-    onError: (error) => {},
-    onClose: () => {},
-  });
 
   const {
     messages,

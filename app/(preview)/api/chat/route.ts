@@ -7,14 +7,14 @@ export async function POST(request: Request) {
 // Add a console.log to debug URLs
 console.log("Server URL:", process.env.PICA_SERVER_URL);
 
-console.log("Creating Pica with server URL:", "http://localhost:3005");
+console.log("Creating Pica with server URL:", "https://platform-backend.inhotel.io");
 const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9kyZO3ee9hWfjGWpt5dY0AzxvM51q6_45_Q6bJTWCTuax7yq4X96nhvB0uTwhhLlsxyJm02JqasmdeDVeHt08GxGPoiBc7I9u00-1EKOejw62kNO0M1EaEFqwaGXw1Y8IfFH", {
   connectors: ["*"],
-  serverUrl: "http://localhost:3005",
+  serverUrl: "https://platform-backend.inhotel.io",
   // knowledgeAgent: true,
-  // knowledgeAgentConfig: {
-  //   includeEnvironmentVariables: false,
-  // },
+  knowledgeAgentConfig: {
+    includeEnvironmentVariables: false,
+  },
 });
 
 // Use this if you need to inspect the pica object
