@@ -11,7 +11,7 @@ console.log("Creating Pica with server URL:", "https://platform-backend.inhotel.
 const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9kyZO3ee9hWfjGWpt5dY0AzxvM51q6_45_Q6bJTWCTuax7yq4X96nhvB0uTwhhLlsxyJm02JqasmdeDVeHt08GxGPoiBc7I9u00-1EKOejw62kNO0M1EaEFqwaGXw1Y8IfFH", {
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
-  // knowledgeAgent: true,
+  knowledgeAgent: true,
   knowledgeAgentConfig: {
     includeEnvironmentVariables: false,
   },
