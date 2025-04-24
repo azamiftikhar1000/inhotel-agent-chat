@@ -15,6 +15,8 @@ const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9ky
   knowledgeAgentConfig: {
     includeEnvironmentVariables: false,
   },
+  identity: "65648fa26b1eb500122c5323", // a meaningful identifier (i.e., userId, teamId or organizationId)
+  identityType: "user"
 });
 
 // Use this if you need to inspect the pica object
