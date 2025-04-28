@@ -1,5 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { convertToCoreMessages, streamText, Message } from "ai";
+import { google } from '@ai-sdk/google';
 import { Pica } from "@picahq/ai";
 
 export async function POST(request: Request) {
@@ -26,7 +27,7 @@ console.log("Pica object:", JSON.stringify(pica, null, 2));
   const system = await pica.generateSystemPrompt();
 
   const stream = streamText({
-    model: openai("gpt-4.1"),
+    model: google("gemini-2.0-flash"),
     system,
     tools: {
       ...pica.oneTool,
