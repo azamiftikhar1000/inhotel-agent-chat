@@ -1,6 +1,8 @@
 import { openai } from "@ai-sdk/openai";
+
 import { convertToCoreMessages, streamText, Message } from "ai";
 import { google } from '@ai-sdk/google';
+import { anthropic } from '@ai-sdk/anthropic';
 import { Pica } from "@picahq/ai";
 
 export async function POST(request: Request) {
@@ -27,7 +29,7 @@ console.log("Pica object:", JSON.stringify(pica, null, 2));
   const system = await pica.generateSystemPrompt();
 
   const stream = streamText({
-    model: google("gemini-2.0-flash"),
+    model: anthropic("claude-3-7-sonnet-20250219"),
     system,
     tools: {
       ...pica.oneTool,
