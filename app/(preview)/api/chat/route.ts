@@ -5,8 +5,30 @@ import { google } from '@ai-sdk/google';
 import { anthropic } from '@ai-sdk/anthropic';
 import { Pica } from "@picahq/ai";
 
+type ModelProvider = 'openai' | 'anthropic' | 'google';
+type ModelConfig = {
+  provider: ModelProvider;
+  model: string;
+};
+
+function getModelFunction(config: ModelConfig) {
+  switch (config.provider) {
+    case 'openai':
+      return openai(config.model);
+    case 'anthropic':
+      return anthropic(config.model);
+    case 'google':
+      return google(config.model);
+    default:
+      throw new Error('Invalid model provider');
+  }
+}
+
 export async function POST(request: Request) {
-  const { messages }: { messages: Message[] } = await request.json();
+  const { messages, modelConfig }: { 
+    messages: Message[], 
+    modelConfig: ModelConfig 
+  } = await request.json();
 // Add a console.log to debug URLs
 console.log("Server URL:", process.env.PICA_SERVER_URL);
 
@@ -26,9 +48,7 @@ console.log("Pica object:", JSON.stringify(pica, null, 2));
   const system = await pica.generateSystemPrompt();
 
   const stream = streamText({
-    model: google("gemini-2.5-flash-preview-04-17"),
-    // model: openai("gpt-4.1"),
-    // model: anthropic("claude-3-7-sonnet-20250219"),
+    model: getModelFunction(modelConfig),
     system,
     tools: {
       ...pica.oneTool,
