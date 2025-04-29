@@ -27,7 +27,8 @@ console.log("Pica object:", JSON.stringify(pica, null, 2));
 
   const stream = streamText({
     // model: google("gemini-2.5-flash-preview-04-17"),
-    model: openai("gpt-4.1"),
+    // model: openai("gpt-4.1"),
+    model: anthropic("claude-3-7-sonnet-20250219"),
     system,
     tools: {
       ...pica.oneTool,
