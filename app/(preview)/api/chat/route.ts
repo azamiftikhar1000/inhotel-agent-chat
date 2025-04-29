@@ -15,10 +15,7 @@ const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9ky
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
   authkit: true,
-  knowledgeAgent: true,
-  knowledgeAgentConfig: {
-    includeEnvironmentVariables: false,
-  },
+  knowledgeAgent: false,
   // identity: "65648fa26b1eb500122c5323", // a meaningful identifier (i.e., userId, teamId or organizationId)
   // identityType: "user"
 });
@@ -29,7 +26,7 @@ console.log("Pica object:", JSON.stringify(pica, null, 2));
   const system = await pica.generateSystemPrompt();
 
   const stream = streamText({
-    model: anthropic("claude-3-7-sonnet-20250219"),
+    model: google("gemini-2.5-flash-preview-04-17"),
     system,
     tools: {
       ...pica.oneTool,
