@@ -15,7 +15,7 @@ const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9ky
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
   authkit: true,
-  knowledgeAgent: false,
+  knowledgeAgent: true,
   // identity: "65648fa26b1eb500122c5323", // a meaningful identifier (i.e., userId, teamId or organizationId)
   // identityType: "user"
 });
