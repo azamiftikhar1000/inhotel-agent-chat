@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 console.log("Server URL:", process.env.PICA_SERVER_URL);
 
 console.log("Creating Pica with server URL:", "https://platform-backend.inhotel.io");
-const pica = new Pica("sk_test_1_3pejYG_SdSxV9xkt5_GA8WoMsSnfBHvY1qpGhlX-6DKd9kyZO3ee9hWfjGWpt5dY0AzxvM51q6_45_Q6bJTWCTuax7yq4X96nhvB0uTwhhLlsxyJm02JqasmdeDVeHt08GxGPoiBc7I9u00-1EKOejw62kNO0M1EaEFqwaGXw1Y8IfFH", {
+const pica = new Pica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM7Ps4G4oOKRALgsyok8uQR3o7ZqvXIZD4NUFp6GTjfKlFo196rtPNhjTAFi7vdMstfgpUsKJ4PJU5hy8aMbbd_PPxKkW1R8ng_Ivg9Rf6UPm19rAsRFjVT6SOeQtEy_7JRvSlemof_j9iZTnAIlX4NwedO_tZ0w3rbCwxCjv7nrzDhcp5f8IAWDgGqiDMrVZMQ", {
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
   authkit: true,
