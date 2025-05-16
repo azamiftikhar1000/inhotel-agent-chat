@@ -4,8 +4,9 @@ import { convertToCoreMessages, streamText, Message } from "ai";
 import { google } from '@ai-sdk/google';
 import { anthropic } from '@ai-sdk/anthropic';
 import { Pica } from "@picahq/ai";
+import { cerebras, createCerebras } from '@ai-sdk/cerebras';
 
-type ModelProvider = 'openai' | 'anthropic' | 'google';
+type ModelProvider = 'openai' | 'anthropic' | 'google' | 'cerebras';
 type ModelConfig = {
   provider: ModelProvider;
   model: string;
@@ -19,6 +20,8 @@ function getModelFunction(config: ModelConfig) {
       return anthropic(config.model);
     case 'google':
       return google(config.model);
+    case 'cerebras':
+      return cerebras(config.model);
     default:
       throw new Error('Invalid model provider');
   }
@@ -37,15 +40,15 @@ const pica = new Pica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM7Ps4G4
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
   authkit: true,
-  knowledgeAgent: true,
+  knowledgeAgent: false,
   // identity: "65648fa26b1eb500122c5323", // a meaningful identifier (i.e., userId, teamId or organizationId)
   // identityType: "user"
 });
 
 // Use this if you need to inspect the pica object
 console.log("Pica object:", JSON.stringify(pica, null, 2));
-
-  const system = await pica.generateSystemPrompt();
+  let system;
+  system = await pica.generateSystemPrompt('');
 
   const stream = streamText({
     model: getModelFunction(modelConfig),
