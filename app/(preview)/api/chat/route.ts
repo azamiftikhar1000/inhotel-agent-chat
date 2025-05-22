@@ -3,7 +3,7 @@ import { openai } from "@ai-sdk/openai";
 import { convertToCoreMessages, streamText, Message } from "ai";
 import { google } from '@ai-sdk/google';
 import { anthropic } from '@ai-sdk/anthropic';
-import { Pica } from "@picahq/ai";
+import { CustomPica } from "@/app/lib/custom-pica";
 import { cerebras, createCerebras } from '@ai-sdk/cerebras';
 
 type ModelProvider = 'openai' | 'anthropic' | 'google' | 'cerebras';
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 console.log("Server URL:", process.env.PICA_SERVER_URL);
 
 console.log("Creating Pica with server URL:", "https://platform-backend.inhotel.io");
-const pica = new Pica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM7Ps4G4oOKRALgsyok8uQR3o7ZqvXIZD4NUFp6GTjfKlFo196rtPNhjTAFi7vdMstfgpUsKJ4PJU5hy8aMbbd_PPxKkW1R8ng_Ivg9Rf6UPm19rAsRFjVT6SOeQtEy_7JRvSlemof_j9iZTnAIlX4NwedO_tZ0w3rbCwxCjv7nrzDhcp5f8IAWDgGqiDMrVZMQ", {
+const pica = new CustomPica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM7Ps4G4oOKRALgsyok8uQR3o7ZqvXIZD4NUFp6GTjfKlFo196rtPNhjTAFi7vdMstfgpUsKJ4PJU5hy8aMbbd_PPxKkW1R8ng_Ivg9Rf6UPm19rAsRFjVT6SOeQtEy_7JRvSlemof_j9iZTnAIlX4NwedO_tZ0w3rbCwxCjv7nrzDhcp5f8IAWDgGqiDMrVZMQ", {
   connectors: ["*"],
   serverUrl: "https://platform-backend.inhotel.io",
   authkit: true,
@@ -48,13 +48,21 @@ const pica = new Pica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM7Ps4G4
 // Use this if you need to inspect the pica object
 console.log("Pica object:", JSON.stringify(pica, null, 2));
   let system;
-  system = await pica.generateSystemPrompt('');
+  system = await pica.generateSystemPrompt(`Once you've selected the platform, you can use the 'get_pica_knowledge' tool at any time—and as many times as needed—to retrieve additional information. 
+Use it if you're uncertain, want to verify details, or simply wish to enhance your response. 
+Always pass only the names of connected platforms to the 'get_pica_knowledge' tool. 
+If the user does not provide the exact platform name, match it to the closest name from the list of connected platforms {connections_info}.
 
+Never pass a platform name that isn't present in the available connections list to the 'get_pica_knowledge' tool. In case of a match, only pass the matched platform name. 
+Always display the 'get_pica_knowledge' tool call in your response.
+`);
+  console.log("System:", system);
   const stream = streamText({
     model: getModelFunction(modelConfig),
     system,
     tools: {
       ...pica.oneTool,
+      get_pica_knowledge: pica.getPicaKnowledgeTool.get_pica_knowledge
     },
     messages: convertToCoreMessages(messages),
     maxSteps: 20,

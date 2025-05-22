@@ -55,6 +55,26 @@ interface ActionResult {
   title?: string;
 }
 
+interface PicaKnowledgeEntry {
+  id: number;
+  text: string;
+  doc_name: string;
+  distance: number;
+  source: {
+    type: string;
+    url: string;
+  };
+  is_private: boolean | null;
+}
+
+interface PicaKnowledgeResult extends ActionResult {
+  data: {
+    status_code: number;
+    message: string;
+    data: Record<string, PicaKnowledgeEntry>;
+  };
+}
+
 // Update the type guard to handle both successful and failed cases
 const isExecuteResult = (result: ActionResult): result is ExecuteResult => {
   if (!result.success) {
@@ -69,6 +89,13 @@ const isExecuteResult = (result: ActionResult): result is ExecuteResult => {
          typeof result.success === 'boolean';
 };
 
+// Type guard for Pica knowledge results
+const isPicaKnowledgeResult = (result: ActionResult): result is PicaKnowledgeResult => {
+  return typeof result.success === 'boolean' && 
+         result.action === 'get_pica_knowledge' &&
+         typeof result.data?.data === 'object';
+};
+
 export const Message = ({
   role,
   content,
@@ -80,7 +107,7 @@ export const Message = ({
 }) => {
   const isUser = role === "user";
 
-
+  console.log("toolInvocations", toolInvocations);
   // Collect all actions and knowledge from tool invocations
   const allActions = toolInvocations?.reduce((acc, toolInvocation) => {
     const { toolName, state } = toolInvocation;
@@ -95,7 +122,7 @@ export const Message = ({
         acc.executeResults.push(result);
       }
       // For getAvailableActions, collect actions by platform
-      if (toolName === "getAvailableActions" && result.actions) {
+      else if (toolName === "getAvailableActions" && result.actions) {
         const platform = result.platform?.toLowerCase() || 'unknown';
         if (!acc.platforms[platform]) {
           acc.platforms[platform] = {
@@ -120,12 +147,31 @@ export const Message = ({
           action: result.action
         });
       }
+      // For get_pica_knowledge, store the PICA knowledge
+      else if (toolName === "get_pica_knowledge" && isPicaKnowledgeResult(result)) {
+        if (!acc.picaKnowledge) {
+          acc.picaKnowledge = [];
+        }
+        
+        // Convert object entries to array and add platform info
+        const entries = Object.values(result.data.data).map(entry => ({
+          ...entry,
+          platform: result.platform || ''
+        }));
+        
+        acc.picaKnowledge.push({
+          platform: result.platform || '',
+          query: (toolInvocation as any).args?.query || '',
+          entries: entries
+        });
+      }
     }
     return acc;
   }, { 
     platforms: {} as Record<string, { name: string; actions: any[] }>,
     knowledge: [] as Array<{ platform: string; action: any }>,
-    executeResults: [] as ActionResult[]
+    executeResults: [] as ActionResult[],
+    picaKnowledge: [] as Array<{ platform: string; query: string; entries: (PicaKnowledgeEntry & { platform: string })[] }>
   });
 
   // Calculate total actions across all platforms
@@ -135,6 +181,42 @@ export const Message = ({
   // Filter execute results to ensure they match ExecuteResult type
   const executeResults = allActions?.executeResults?.filter(isExecuteResult) || [];
 
+  // Create a simple UI for PICA knowledge display
+  const renderPicaKnowledge = () => {
+    if (!allActions?.picaKnowledge?.length) return null;
+    
+    return (
+      <div className="p-3 rounded-md border border-blue-500/20 bg-blue-500/10 space-y-3">
+        <div className="font-medium text-sm">PICA Knowledge</div>
+        {allActions.picaKnowledge.map((knowledge, idx) => (
+          <div key={idx} className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">{knowledge.platform}</Badge>
+              <span className="text-xs text-muted-foreground">Query: {knowledge.query}</span>
+            </div>
+            <div className="space-y-2">
+              {knowledge.entries.map((entry, entryIdx) => (
+                <div key={entryIdx} className="p-2 bg-background/50 rounded border text-xs">
+                  <div className="mb-1 text-foreground/80">{entry.doc_name}</div>
+                  <p className="text-foreground/70">{entry.text}</p>
+                  {entry.source?.url && (
+                    <a 
+                      href={entry.source.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline text-xs mt-1 block"
+                    >
+                      Source: {entry.source.type}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -162,6 +244,9 @@ export const Message = ({
                 totalActions={totalActions}
               />
             )}
+
+            {/* Show PICA Knowledge */}
+            {allActions.picaKnowledge?.length > 0 && renderPicaKnowledge()}
 
             {/* Show ExecuteCard if we have any valid execute results */}
             {executeResults.length > 0 && (
