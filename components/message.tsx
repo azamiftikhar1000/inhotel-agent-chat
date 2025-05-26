@@ -123,19 +123,16 @@ export const Message = ({
       }
       // For getAvailableActions, collect actions by platform
       else if (toolName === "getAvailableActions" && result.actions) {
-        const platform = result.platform?.toLowerCase() || 'unknown';
-        if (!acc.platforms[platform]) {
-          acc.platforms[platform] = {
-            name: result.platform || '',
-            actions: []
-          };
-        }
-        // Add platform to each action
-        const actionsWithPlatform = result.actions.map(action => ({
-          ...action,
-          platform: result.platform
+        const key = result.platform?.toLowerCase() || 'unknown';
+      
+        // Always (re)create the platform bucket
+        acc.platforms[key] = { name: result.platform || '', actions: [] };
+      
+        // If you simply want the fresh list, REPLACE:
+        acc.platforms[key].actions = result.actions.map(a => ({
+          ...a,
+          platform: result.platform,
         }));
-        acc.platforms[platform].actions.push(...actionsWithPlatform);
       }
       // For getActionKnowledge, store the action knowledge
       else if (toolName === "getActionKnowledge" && result.action) {

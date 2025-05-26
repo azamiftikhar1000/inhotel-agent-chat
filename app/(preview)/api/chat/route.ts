@@ -30,7 +30,7 @@ function getModelFunction(config: ModelConfig) {
 export async function POST(request: Request) {
   const { messages, modelConfig }: { 
     messages: Message[], 
-    modelConfig: ModelConfig 
+    modelConfig: ModelConfig
   } = await request.json();
 // Add a console.log to debug URLs
 console.log("Server URL:", process.env.PICA_SERVER_URL);
@@ -45,17 +45,56 @@ const pica = new CustomPica("sk_test_1_nwJXddHdNPifkP8vB9UwqsItzNBkjz4lwacmSTnpM
   // identityType: "user"
 });
 
+// TODO: Retrieve config from the database
+
+
 // Use this if you need to inspect the pica object
 console.log("Pica object:", JSON.stringify(pica, null, 2));
   let system;
-  system = await pica.generateSystemPrompt(`Once you've selected the platform, you can use the 'get_pica_knowledge' tool at any time—and as many times as needed—to retrieve additional information. 
-Use it if you're uncertain, want to verify details, or simply wish to enhance your response. 
-Always pass only the names of connected platforms to the 'get_pica_knowledge' tool. 
-If the user does not provide the exact platform name, match it to the closest name from the list of connected platforms {connections_info}.
+  // TODO: Use config in the prompt
+  system = await pica.generateSystemPrompt(`
+    You may invoke get_pica_knowledge at any point—before, during, or after drafting your reply—and as many times as needed to retrieve relevant information from available knowledge sources.
 
-Never pass a platform name that isn't present in the available connections list to the 'get_pica_knowledge' tool. In case of a match, only pass the matched platform name. 
-Always display the 'get_pica_knowledge' tool call in your response.
-`);
+    Search modes
+    Platform-specific search
+    • Pass a valid platform name from the current {connections_info} list to query that platform's knowledge base.
+    • If the user supplies a near-match, map it to the closest name in {connections_info} first.
+    • Never pass a platform name that isn't in {connections_info}.
+
+    Assistant-specific search
+    • If no platform is provided, the tool automatically searches the assistant's own knowledge base.
+
+    General search
+    • Invoke the tool without a platform to search across all available sources.
+
+    When to call get_pica_knowledge
+    Call the tool immediately whenever you …
+
+    Need to verify facts.
+
+    Want richer detail.
+
+    Feel uncertain about any point.
+
+    Need background info before a platform is selected.
+
+    Receive a generic or ambiguous query and don't know which platform fits best—call the tool first to gather insight.
+
+    Discover that none of the current connections appear to cover the user's request.
+
+    Have any confusion about which platform or data source to tap.
+
+    Rule of thumb: If you're tempted to tell the user “I'm not sure” or “this platform may not support that,” stop and call get_pica_knowledge first. Only after the tool confirms there's truly no relevant info should you tell the user a platform can’t help.
+
+    Action-ID rules (critical)
+    Always copy the exact _id from the latest GetAvailableActionsTool response.
+
+    Never alter, abbreviate, or guess an action ID.
+
+    If an action ID is missing or returns “Invalid Action ID,” call GetAvailableActionsTool again.
+
+    When you do so, discard any previously cached actions for that platform and replace them entirely with the new list—never merge or reuse outdated IDs.
+  `);
   console.log("System:", system);
   const stream = streamText({
     model: getModelFunction(modelConfig),
