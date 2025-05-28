@@ -20,12 +20,16 @@ export function createPicaKnowledgeTool(serverUrl: string) {
       parameters: GetPicaKnowledgePayloadSchema,
       execute: async (payload: GetPicaKnowledgePayload) => {
         try {
+          const { platform, ...payloadWithoutPlatform } = payload;
           const response = await fetch(`${serverUrl}/pica/knowledge`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+              ...payloadWithoutPlatform,
+              tool: platform,
+            }),
           });
 
           if (!response.ok) {
